@@ -9,4 +9,67 @@
   <h1>VATBLE Maxime</h1>
   <p><a href="https://github.com/MaximeVTB/vatble_maxime">GitHub repository</a></p>
 </body>
+
+<body>
+    <h1>Exercice de Géolocalisation</h1>
+    <h2>Exercice 1 : Géolocalisation</h2>
+
+    <div class="card">
+        <h2>1. Position unique (getCurrentPosition)</h2>
+        <div id="current-pos">Recherche en cours...</div>
+    </div>
+
+    <div class="card">
+        <h2>2. Suivi en continu (watchPosition)</h2>
+        <div id="watch-pos">En attente de mouvement...</div>
+    </div>
+
+    <p style="font-size: 0.85rem; color: #666;">Source : <a href="https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API/Using_the_Geolocation_API" target="_blank">MDN Web Docs</a></p>
+
+    <script>
+        function formaterPosition(pos) {
+            const c = pos.coords;
+            const date = new Date(pos.timestamp).toLocaleString('fr-FR');
+            return `
+                <ul>
+                    <li><strong>Latitude :</strong> ${c.latitude}</li>
+                    <li><strong>Longitude :</strong> ${c.longitude}</li>
+                    <li><strong>Altitude :</strong> ${c.altitude !== null ? c.altitude + ' m' : 'Non disponible'}</li>
+                    <li><strong>Précision :</strong> ${c.accuracy} m</li>
+                    <li><strong>Vitesse :</strong> ${c.speed !== null ? c.speed + ' m/s' : 'Non disponible'}</li>
+                    <li><strong>Date :</strong> ${date}</li>
+                </ul>
+            `;
+        }
+
+        function gererErreur(err) {
+            return `<p style="color: red;">Erreur ${err.code} : ${err.message}</p>`;
+        }
+
+        const options = { 
+            enableHighAccuracy: true, 
+            timeout: 10000, 
+            maximumAge: 0 
+        };
+
+        if ("geolocation" in navigator) {
+            // Méthode 1 : Position unique
+            navigator.geolocation.getCurrentPosition(
+                (pos) => { document.getElementById('current-pos').innerHTML = formaterPosition(pos); },
+                (err) => { document.getElementById('current-pos').innerHTML = gererErreur(err); },
+                options
+            );
+
+            // Méthode 2 : Suivi en continu
+            navigator.geolocation.watchPosition(
+                (pos) => { document.getElementById('watch-pos').innerHTML = formaterPosition(pos); },
+                (err) => { document.getElementById('watch-pos').innerHTML = gererErreur(err); },
+                options
+            );
+        } else {
+            document.body.innerHTML += "<p style='color: red;'>La géolocalisation n'est pas supportée par votre navigateur.</p>";
+        }
+    </script>
+</body>
+
 </html>
